@@ -2,6 +2,7 @@
 #include <cassert>
 #include <algorithm>
 
+#include <QWheelEvent>
 #include <QGraphicsItemGroup>
 
 #include "plotview.h"
@@ -30,12 +31,15 @@ struct PlotView::SignalWithInfo {
 };
 
 PlotView::PlotView(QWidget *parent) :
-  QGraphicsView(parent)
+  QGraphicsView(parent), m_grid(new QGraphicsItemGroup), m_signalUs(0),
+  m_zoomNumerator(1), m_zoomDenominator(1)
 {
   m_scene = new QGraphicsScene(this);
   setScene(m_scene);
 
-  connect(this, SIGNAL(signalUpdated()), this, SLOT(redrawScene()));
+  m_scene->addItem(m_grid);
+
+  connect(this, SIGNAL(signalUpdated()), this, SLOT(redraw()));
 }
 
 PlotView::~PlotView()
@@ -67,14 +71,15 @@ void PlotView::drawSignal(SignalWithInfo* si)
   unsigned prevTime = 0;
 
   if (si->itemGroup) {
-    m_scene->destroyItemGroup(si->itemGroup);
+    std::cerr << "Destroying group" << std::endl;
+    delete si->itemGroup;
   }
   si->itemGroup = new QGraphicsItemGroup();
   m_scene->addItem(si->itemGroup);
 
   auto addLine = [&](unsigned t0, unsigned t1, bool y0, bool y1) {
-    new QGraphicsLineItem(t0 * mc_widthScale, si->position + y0 * mc_heightScale, 
-                          t1 * mc_widthScale, si->position + y1 * mc_heightScale,
+    new QGraphicsLineItem(horizPosAt(t0), si->position + y0 * mc_heightScale, 
+                          horizPosAt(t1), si->position + y1 * mc_heightScale,
                           si->itemGroup);
   };
 
@@ -86,27 +91,83 @@ void PlotView::drawSignal(SignalWithInfo* si)
   }
 }
 
+void PlotView::redraw()
+{
+  redrawScene();
+  redrawGrid();
+}
+
+unsigned PlotView::horizPosAt(TDS time)
+{
+  return time * mc_widthScale * m_zoomNumerator / m_zoomDenominator;
+}
+
+unsigned PlotView::vertBegin(unsigned index)
+{
+  return index * (mc_heightScale + 10) + 10;
+}
+
+unsigned PlotView::vertEnd(unsigned index)
+{
+  return (index + 1) * (mc_heightScale + 10);
+}
+
+void PlotView::wheelEvent(QWheelEvent* event)
+{
+  if (event->delta() > 0) {
+    zoomIn();
+  } else if (event->delta() < 0) {
+    zoomOut();
+  }
+}
+
+void PlotView::zoomIn()
+{
+  m_zoomNumerator *= 2;
+  redraw();
+}
+
+void PlotView::zoomOut()
+{
+  m_zoomDenominator *= 2;
+  redraw();
+}
+
+void PlotView::redrawGrid()
+{
+  delete m_grid;
+  m_grid = new QGraphicsItemGroup();
+  m_scene->addItem(m_grid);
+  m_grid->setZValue(-10);
+
+  QRectF sceneRect = m_scene->sceneRect();
+
+  for (TDS t = 0; t < m_signalUs; t += 1000) {
+    new QGraphicsLineItem(horizPosAt(t), 0,
+                          horizPosAt(t), sceneRect.height(),
+                          m_grid);
+  }
+}
 
 void PlotView::redrawScene()
 {
   if (m_signals.begin() != m_signals.end()) {
-    int width = *(m_signals[0]->signal->tds_end() - 1) * mc_widthScale;
-    int height = mc_heightScale * m_signals.size();
+    m_signalUs = *(m_signals[0]->signal->tds_end() - 1);
 
-    std::cerr << "width: " << width << std::endl;
-    std::cerr << "height: " << height << std::endl;
+    int width = horizPosAt(m_signalUs);
+    int height = (mc_heightScale + 10) * m_signals.size() + 10;
 
     // QGraphicsScene* newScene = new QGraphicsScene(0, 0, width, height, this);
     // QGraphicsScene* oldScene = m_scene;
     // m_scene = newScene;
     m_scene->setSceneRect(0, 0, width, height);
 
-    int yOfs = 0;
+    int index = 0;
     for (auto si: m_signals) {
-      si->position = yOfs;
+      si->position = vertBegin(index);
       si->height = mc_heightScale;
       drawSignal(si);
-      yOfs += mc_heightScale + 10;
+      ++index;
     }
 
     // setScene(newScene);

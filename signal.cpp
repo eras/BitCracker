@@ -11,6 +11,12 @@ Signal::~Signal()
   // nothing
 }
 
+const TDSVector&
+Signal::get()
+{
+  return m_data;
+}
+
 TDSVector::const_iterator
 Signal::tds_begin() const
 {

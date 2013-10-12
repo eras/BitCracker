@@ -20,6 +20,8 @@ public:
   TDSVector::const_iterator tds_begin() const;
   TDSVector::const_iterator tds_end() const;
 
+  const TDSVector& get();
+
  private:
   const TDSVector m_data;
 };

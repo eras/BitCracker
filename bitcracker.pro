@@ -16,10 +16,13 @@ QMAKE_CXXFLAGS += -std=c++11
 SOURCES += main.cpp\
         mainwindow.cpp \
     plotview.cpp \
-    signal.cpp
+    signal.cpp \
+    seqlenanalysis.cpp
 
 HEADERS  += mainwindow.h \
     plotview.h \
-    signal.h
+    signal.h \
+    seqlenanalysis.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    seqlenanalysis.ui

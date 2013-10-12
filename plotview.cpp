@@ -47,6 +47,27 @@ PlotView::~PlotView()
   // nothing
 }
 
+Signal*
+PlotView::getSignalByIndex(int a_index)
+{
+  if (a_index < m_signals.size()) {
+    return m_signals[a_index]->signal.get();
+  } else {
+    return 0;
+  }
+}
+
+Signal*
+PlotView::getSignalByName(QString a_name)
+{
+  auto it = std::find_if(m_signals.begin(), m_signals.end(), [&a_name](SignalWithInfo* x){ return x->signalName == a_name; });
+  if (it != m_signals.end()) {
+    return (*it)->signal.get();
+  } else {
+    return 0;
+  }
+}
+
 void PlotView::removeSignal(QString a_name)
 {
   auto it = std::find_if(m_signals.begin(), m_signals.end(), [&a_name](SignalWithInfo* x){ return x->signalName == a_name; });

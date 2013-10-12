@@ -23,6 +23,9 @@ public slots:
   void zoomIn();
   void zoomOut();
 
+  Signal* getSignalByName(QString a_name);
+  Signal* getSignalByIndex(int a_index);
+
 signals:
   void signalUpdated();
 

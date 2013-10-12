@@ -88,6 +88,14 @@ module Make = functor (C : CLUSTER) -> struct
 	centroids in
     array_minimum_at distances
 
+  (* refactor with cluster_of.. *)
+  let cluster_of' centroids value =
+    let distances =
+      Array.map 
+	(fun cluster -> C.distance (C.at cluster) value)
+	centroids in
+    array_minimum_at distances
+
   let kmeans_centroids ?(max_iterations=100) centroids (data : C.at array) =
     (* values associated to their cluster *)
     let centroids = Array.map (fun v -> Some v) centroids in
@@ -159,6 +167,21 @@ module Make = functor (C : CLUSTER) -> struct
 	| _ -> centroids
     in
     iterate 1 []
+
+  (* Uses the elbow method *)
+  let bestmeans ?num_tries ?max_iterations num_clusters_list (data : C.at array) =
+    snd (
+      List.hd (
+	List.sort compare (
+	  List.map 
+	    (fun num_clusters ->
+	      let centroids = kmeans ?num_tries ?max_iterations num_clusters data in
+	      (cluster_cost centroids data, centroids)
+	    )
+	    num_clusters_list
+	)
+      )
+    )    
 end
 
 module KMeansFloat = Make(Cluster1D)

@@ -127,6 +127,9 @@ module Make = functor (C : CLUSTER) -> struct
     in 
     iterate 1
 
+  let cluster_cost centroids data =
+    cost centroids (Array.map (fun v -> (v, cluster_of (Array.map some centroids) v)) data)
+
   let kmeans ?(num_tries=10) ?max_iterations num_clusters (data : C.at array) =
     let tries = [kmeans_centroids ?max_iterations (fixed_centroids num_clusters data) data] in
     let tries = 
@@ -135,13 +138,27 @@ module Make = functor (C : CLUSTER) -> struct
 	    |> Enum.map (fun _ -> kmeans_centroids ?max_iterations (random_centroids num_clusters) data) 
 	    |> List.of_enum) in
     let tries = Array.of_list tries in
-    let mapping = fun centroids -> cost centroids (Array.map (fun v -> (v, cluster_of (Array.map some centroids) v)) data) in
+    let mapping centroids = cluster_cost centroids data in
     tries.(
       array_extreme_at2 
 	mapping
 	(<)
 	tries
     )
+      
+  (* Uses the elbow method *)
+  let nmeans ?num_tries ?max_iterations (data : C.at array) =
+    let rec iterate num_clusters prev =
+      let centroids = kmeans ?num_tries ?max_iterations num_clusters data in
+      let cost = cluster_cost centroids data in
+      match prev with
+	| (cost', _)::(cost'', _)::_ when ((log (cost /. cost'))/.(log (cost' /. cost''))) > 10.0 ->
+	  centroids
+	| _ when num_clusters < 7 ->
+	  iterate (num_clusters + 1) ((cost, centroids)::prev)
+	| _ -> centroids
+    in
+    iterate 1 []
 end
 
 module KMeansFloat = Make(Cluster1D)

@@ -24,7 +24,7 @@ let seqlen common source =
       (fun idx centroid ->
 	Printf.printf "%s %f " label centroid;
 	let centroid_data = Array.filter (fun value -> K.cluster_of' centroids value = idx) data in
-	Printf.printf "n %d mean %f stddev %f min %f max %f\n" 
+	Printf.printf "%d %f %f %f %f\n" 
 	  (Array.length centroid_data) (St.mean centroid_data) (St.stddev centroid_data)
 	  (Array.fold_left min centroid_data.(0) centroid_data) (Array.fold_left max centroid_data.(0) centroid_data) 
 	(* Array.iter  *)

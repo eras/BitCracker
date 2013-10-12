@@ -17,14 +17,13 @@ SeqLenAnalysis::SeqLenAnalysis(QWidget *parent) :
 
   connect(ui->seqLenTable, SIGNAL(itemClicked(QTableWidgetItem*)),
           this, SLOT(chooseItem(QTableWidgetItem*)));
-  connect(ui->mark, SIGNAL(toggled(bool)),
+  connect(ui->mark, SIGNAL(clicked(bool)),
           this, SLOT(markDone()));
 }
 
 void
 SeqLenAnalysis::chooseItem(QTableWidgetItem* a_item)
 {
-  std::cerr << "Hepsansaa\n";
   const Data& d = *m_widgetData[a_item];
   ui->high->setChecked(d.bit);
   ui->low->setChecked(!d.bit);
@@ -64,7 +63,7 @@ namespace {
   }
 }
 
-int SeqLenAnalysis::runOnData(const TDSVector& a_data)
+void SeqLenAnalysis::setupOnData(const TDSVector& a_data, SeqLenAnalysis& a_instance)
 {
   QTemporaryFile tmpFileOut;
   QTemporaryFile tmpFileIn;
@@ -80,14 +79,13 @@ int SeqLenAnalysis::runOnData(const TDSVector& a_data)
       prev = sample;
     }
   }
-  SeqLenAnalysis instance;
 
-  instance.ui->seqLenTable->setHorizontalHeaderItem(0, new QTableWidgetItem("value"));
-  instance.ui->seqLenTable->setHorizontalHeaderItem(1, new QTableWidgetItem("n"));
-  instance.ui->seqLenTable->setHorizontalHeaderItem(2, new QTableWidgetItem("mean"));
-  instance.ui->seqLenTable->setHorizontalHeaderItem(3, new QTableWidgetItem("stddev"));
-  instance.ui->seqLenTable->setHorizontalHeaderItem(4, new QTableWidgetItem("min"));
-  instance.ui->seqLenTable->setHorizontalHeaderItem(5, new QTableWidgetItem("max"));
+  a_instance.ui->seqLenTable->setHorizontalHeaderItem(0, new QTableWidgetItem("value"));
+  a_instance.ui->seqLenTable->setHorizontalHeaderItem(1, new QTableWidgetItem("n"));
+  a_instance.ui->seqLenTable->setHorizontalHeaderItem(2, new QTableWidgetItem("mean"));
+  a_instance.ui->seqLenTable->setHorizontalHeaderItem(3, new QTableWidgetItem("stddev"));
+  a_instance.ui->seqLenTable->setHorizontalHeaderItem(4, new QTableWidgetItem("min"));
+  a_instance.ui->seqLenTable->setHorizontalHeaderItem(5, new QTableWidgetItem("max"));
 
 
   std::cerr << (QString("../tool/bitcracker.native seqlen ") + tmpFileOut.fileName() + " >" + tmpFileIn.fileName()).toStdString().c_str() << std::endl;
@@ -117,12 +115,10 @@ int SeqLenAnalysis::runOnData(const TDSVector& a_data)
         d.stddev = stddev;
         d.min = min;
         d.max = max;
-        instance.add(d);
+        a_instance.add(d);
       }
     }
   }
-
-  return instance.exec();
 }
 
 void

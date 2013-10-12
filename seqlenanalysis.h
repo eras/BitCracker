@@ -22,7 +22,7 @@ public:
   explicit SeqLenAnalysis(QWidget *parent = 0);
   ~SeqLenAnalysis();
 
-  static int runOnData(const TDSVector& a_data);
+  static void setupOnData(const TDSVector& a_data, SeqLenAnalysis& a_instance);
 
 signals:
   void mark(QString label, bool state, unsigned min, unsigned max);

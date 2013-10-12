@@ -1,11 +1,14 @@
 #ifndef PLOTVIEW_H
 #define PLOTVIEW_H
 
+#include <memory>
+#include <map>
+
 #include <QGraphicsView>
 #include <QList>
-#include <memory>
 
 #include "signal.h"
+#include "condition.h"
 
 class PlotView : public QGraphicsView
 {
@@ -25,6 +28,8 @@ public slots:
 
   Signal* getSignalByName(QString a_name);
   Signal* getSignalByIndex(int a_index);
+
+  void mark(QString a_label, bool a_state, unsigned a_min, unsigned a_max);
 
 signals:
   void signalUpdated();
@@ -53,6 +58,12 @@ private:
   unsigned horizPosAt(TDS time);
   unsigned vertBegin(unsigned index); // y-offset of the beginning of the nth plot
   unsigned vertEnd(unsigned index); // y-offset of the ending of the nth plot
+
+  typedef bool ConditionMarker;
+
+  typedef std::map<ConditionCheckFactory*, ConditionMarker> ConditionMap;
+
+  ConditionMap m_conditions;
 };
 
 #endif // PLOTVIEW_H

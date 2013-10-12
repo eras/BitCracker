@@ -8,6 +8,8 @@
 #include "plotview.h"
 #include "signal.h"
 
+
+
 struct PlotView::SignalWithInfo {
   QString                 signalName;
   std::unique_ptr<Signal> signal;
@@ -85,6 +87,13 @@ void PlotView::setSignal(QString a_name, Signal* a_signal)
   emit signalUpdated();
 }
 
+void PlotView::mark(QString a_label, bool a_state, unsigned a_min, unsigned a_max)
+{
+  ConditionCheckFactory* factory = new StateLengthCheckFactory(a_state, a_min, a_max);
+  m_conditions[factory] = true;
+  emit signalUpdated();
+}
+
 void PlotView::drawSignal(SignalWithInfo* si)
 {
   const Signal& signal = *si->signal.get();
@@ -98,15 +107,33 @@ void PlotView::drawSignal(SignalWithInfo* si)
   si->itemGroup = new QGraphicsItemGroup();
   m_scene->addItem(si->itemGroup);
 
-  auto addLine = [&](unsigned t0, unsigned t1, bool y0, bool y1) {
+  std::map<std::unique_ptr<ConditionSession>, ConditionMarker*> condSessions;
+  for (auto& cond: m_conditions) {
+    ConditionSession* session = cond.first->start();
+    condSessions[std::unique_ptr<ConditionSession>(session)] = &cond.second;
+  }
+
+  auto addLine = [&](unsigned t0, unsigned t1, bool y0, bool y1, bool marked) {
+    QGraphicsLineItem* line =
     new QGraphicsLineItem(horizPosAt(t0), si->position + y0 * mc_heightScale, 
                           horizPosAt(t1), si->position + y1 * mc_heightScale,
                           si->itemGroup);
+    if (marked) {
+      QPen p = line->pen();
+      p.setWidth(5);
+      p.setColor(QColor(Qt::red));
+      line->setPen(p);
+    }
   };
 
   for (auto curTime: signal.tds()) {
-    addLine(prevTime, curTime, !state, !state);
-    addLine(curTime, curTime, 0, 1);
+    bool marked = false;
+    for (auto& cond: condSessions) {
+      bool mark = (*cond.first)(curTime, state);
+      marked = marked || mark;
+    }
+    addLine(prevTime, curTime, !state, !state, marked);
+    addLine(curTime, curTime, 0, 1, false);
     prevTime = curTime;
     state = !state;
   }

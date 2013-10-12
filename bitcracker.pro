@@ -17,12 +17,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     plotview.cpp \
     signal.cpp \
-    seqlenanalysis.cpp
+    seqlenanalysis.cpp \
+    condition.cpp
 
 HEADERS  += mainwindow.h \
     plotview.h \
     signal.h \
-    seqlenanalysis.h
+    seqlenanalysis.h \
+    condition.h
 
 FORMS    += mainwindow.ui \
     seqlenanalysis.ui

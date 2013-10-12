@@ -14,6 +14,31 @@ SeqLenAnalysis::SeqLenAnalysis(QWidget *parent) :
   ui(new Ui::SeqLenAnalysis)
 {
   ui->setupUi(this);
+
+  connect(ui->seqLenTable, SIGNAL(itemClicked(QTableWidgetItem*)),
+          this, SLOT(chooseItem(QTableWidgetItem*)));
+  connect(ui->mark, SIGNAL(toggled(bool)),
+          this, SLOT(markDone()));
+}
+
+void
+SeqLenAnalysis::chooseItem(QTableWidgetItem* a_item)
+{
+  std::cerr << "Hepsansaa\n";
+  const Data& d = *m_widgetData[a_item];
+  ui->high->setChecked(d.bit);
+  ui->low->setChecked(!d.bit);
+  ui->minimum->setText(QString::number(d.min));
+  ui->maximum->setText(QString::number(d.max));
+}
+
+void
+SeqLenAnalysis::markDone()
+{
+  emit mark(ui->identifier->text(),
+            ui->high->isChecked(),
+            ui->minimum->text().toInt(),
+            ui->maximum->text().toInt());
 }
 
 SeqLenAnalysis::~SeqLenAnalysis()
@@ -85,16 +110,38 @@ int SeqLenAnalysis::runOnData(const TDSVector& a_data)
       if (0 && !st.good()) {
         std::cerr << "Failed to read\n";
       } else {
-        instance.ui->seqLenTable->insertRow(0);
-        instance.ui->seqLenTable->setItem(0, 0, new QTableWidgetItem(QString::number(bit)));
-        instance.ui->seqLenTable->setItem(0, 1, new QTableWidgetItem(QString::number(n)));
-        instance.ui->seqLenTable->setItem(0, 2, new QTableWidgetItem(QString::number(mean)));
-        instance.ui->seqLenTable->setItem(0, 3, new QTableWidgetItem(QString::number(stddev)));
-        instance.ui->seqLenTable->setItem(0, 4, new QTableWidgetItem(QString::number(min)));
-        instance.ui->seqLenTable->setItem(0, 5, new QTableWidgetItem(QString::number(max)));
+        Data d;
+        d.bit = bit;
+        d.n = n;
+        d.mean = mean;
+        d.stddev = stddev;
+        d.min = min;
+        d.max = max;
+        instance.add(d);
       }
     }
   }
 
   return instance.exec();
+}
+
+void
+SeqLenAnalysis::add(Data a_data)
+{
+  ui->seqLenTable->insertRow(0);
+  m_data.push_front(a_data);
+  Data& data = *m_data.begin();
+
+  auto add = [&](int x, QString value) {
+    QTableWidgetItem* w = new QTableWidgetItem(value);
+    ui->seqLenTable->setItem(0, x, w);
+    m_widgetData[w] = &data;
+  };
+
+  add(0, QString::number(data.bit));
+  add(1, QString::number(data.n));
+  add(2, QString::number(data.mean));
+  add(3, QString::number(data.stddev));
+  add(4, QString::number(data.min));
+  add(5, QString::number(data.max));
 }

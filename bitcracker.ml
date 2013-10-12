@@ -40,7 +40,6 @@ let cmd_seqlen =
   Term.info "seqlen" ~version
 
 let main () = 
-  Printf.printf "bitcracker %s\n" version;
   match Term.eval_choice default_prompt [cmd_seqlen] with `Error _ -> exit 1 | _ -> exit 0
 
 let _ = main ()

@@ -4,7 +4,11 @@ module IntSet = Set.Make(Int)
 module FloatSet = Set.Make(Float)
 
 let floats_of filename =
-  let data = File.lines_of filename in
+  let data = 
+    if filename = "-" 
+    then IO.lines_of stdin
+    else File.lines_of filename
+  in
     Enum.map Float.of_string data
 
 module K = KMeans.KMeansFloat

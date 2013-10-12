@@ -29,7 +29,7 @@ public slots:
   Signal* getSignalByName(QString a_name);
   Signal* getSignalByIndex(int a_index);
 
-  void mark(QString a_label, bool a_state, unsigned a_min, unsigned a_max);
+  void mark(QString a_label, bool a_state, unsigned a_min, unsigned a_max, QColor color);
 
 signals:
   void signalUpdated();
@@ -59,7 +59,7 @@ private:
   unsigned vertBegin(unsigned index); // y-offset of the beginning of the nth plot
   unsigned vertEnd(unsigned index); // y-offset of the ending of the nth plot
 
-  typedef bool ConditionMarker;
+  typedef QColor ConditionMarker;
 
   typedef std::map<ConditionCheckFactory*, ConditionMarker> ConditionMap;
 

@@ -5,20 +5,24 @@
 #include <sstream>
 #include <QTemporaryFile>
 #include <QTableWidgetItem>
+#include <QColorDialog>
 
 #include "seqlenanalysis.h"
 #include "ui_seqlenanalysis.h"
 
 SeqLenAnalysis::SeqLenAnalysis(QWidget *parent) :
   QDialog(parent),
-  ui(new Ui::SeqLenAnalysis)
+  ui(new Ui::SeqLenAnalysis),
+  m_color(Qt::red)
 {
   ui->setupUi(this);
 
   connect(ui->seqLenTable, SIGNAL(itemClicked(QTableWidgetItem*)),
           this, SLOT(chooseItem(QTableWidgetItem*)));
-  connect(ui->mark, SIGNAL(clicked(bool)),
+  connect(ui->mark, SIGNAL(clicked()),
           this, SLOT(markDone()));
+
+  connect(ui->changeColor, SIGNAL(clicked()), this, SLOT(changeColor()));
 }
 
 void
@@ -32,12 +36,22 @@ SeqLenAnalysis::chooseItem(QTableWidgetItem* a_item)
 }
 
 void
+SeqLenAnalysis::changeColor()
+{
+  QColorDialog colorDialog(this);
+  if (colorDialog.exec() == QDialog::Accepted) {
+    m_color = colorDialog.selectedColor();
+  }
+}
+
+void
 SeqLenAnalysis::markDone()
 {
   emit mark(ui->identifier->text(),
             ui->high->isChecked(),
             ui->minimum->text().toInt(),
-            ui->maximum->text().toInt());
+            ui->maximum->text().toInt(),
+            m_color);
 }
 
 SeqLenAnalysis::~SeqLenAnalysis()

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>934</width>
-    <height>390</height>
+    <height>398</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -85,6 +85,17 @@
          </item>
          <item>
           <widget class="QLineEdit" name="identifier"/>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QPushButton" name="changeColor">
+             <property name="text">
+              <string>Color</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
          <item>
           <widget class="QRadioButton" name="high">

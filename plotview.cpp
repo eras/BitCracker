@@ -87,10 +87,10 @@ void PlotView::setSignal(QString a_name, Signal* a_signal)
   emit signalUpdated();
 }
 
-void PlotView::mark(QString a_label, bool a_state, unsigned a_min, unsigned a_max)
+void PlotView::mark(QString a_label, bool a_state, unsigned a_min, unsigned a_max, QColor color)
 {
   ConditionCheckFactory* factory = new StateLengthCheckFactory(a_state, a_min, a_max);
-  m_conditions[factory] = true;
+  m_conditions[factory] = color;
   emit signalUpdated();
 }
 
@@ -113,27 +113,34 @@ void PlotView::drawSignal(SignalWithInfo* si)
     condSessions[std::unique_ptr<ConditionSession>(session)] = &cond.second;
   }
 
-  auto addLine = [&](unsigned t0, unsigned t1, bool y0, bool y1, bool marked) {
+  auto addLine = [&](unsigned t0, unsigned t1, bool y0, bool y1, int width, QColor color, int yOfs) {
     QGraphicsLineItem* line =
-    new QGraphicsLineItem(horizPosAt(t0), si->position + y0 * mc_heightScale, 
-                          horizPosAt(t1), si->position + y1 * mc_heightScale,
+    new QGraphicsLineItem(horizPosAt(t0), si->position + y0 * mc_heightScale + yOfs, 
+                          horizPosAt(t1), si->position + y1 * mc_heightScale + yOfs,
                           si->itemGroup);
-    if (marked) {
-      QPen p = line->pen();
-      p.setWidth(5);
-      p.setColor(QColor(Qt::red));
-      line->setPen(p);
-    }
+    QPen p = line->pen();
+    p.setWidth(width);
+    p.setColor(color);
+    line->setPen(p);
   };
 
   for (auto curTime: signal.tds()) {
-    bool marked = false;
+    std::list<QColor> colors;
     for (auto& cond: condSessions) {
-      bool mark = (*cond.first)(curTime, state);
-      marked = marked || mark;
+      if ((*cond.first)(curTime, state)) {
+        colors.push_back(*cond.second);
+      }
     }
-    addLine(prevTime, curTime, !state, !state, marked);
-    addLine(curTime, curTime, 0, 1, false);
+    if (colors.begin() != colors.end()) {
+      int ofs = 0;
+      for (auto& color: colors) {
+        addLine(prevTime, curTime, !state, !state, 5, color, ofs);
+        ofs += 3;
+      }
+    } else {
+      addLine(prevTime, curTime, !state, !state, 1, QColor(Qt::black), 0);
+    }
+    addLine(curTime, curTime, 0, 1, 1, QColor(Qt::black), 0);
     prevTime = curTime;
     state = !state;
   }

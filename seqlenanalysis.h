@@ -25,11 +25,12 @@ public:
   static void setupOnData(const TDSVector& a_data, SeqLenAnalysis& a_instance);
 
 signals:
-  void mark(QString label, bool state, unsigned min, unsigned max);
+  void mark(QString label, bool state, unsigned min, unsigned max, QColor color);
 
 private slots:
   void chooseItem(QTableWidgetItem* item);
   void markDone();
+  void changeColor();
 
 private:
   Ui::SeqLenAnalysis *ui;
@@ -47,6 +48,7 @@ private:
 
   std::map<QTableWidgetItem*, Data*> m_widgetData;
   std::list<Data>                    m_data;
+  QColor                             m_color;
 };
 
 #endif // SEQLENANALYSIS_H

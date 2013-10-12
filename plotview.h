@@ -2,6 +2,7 @@
 #define PLOTVIEW_H
 
 #include <QGraphicsView>
+#include <QList>
 #include <memory>
 
 class Signal;
@@ -15,16 +16,25 @@ public:
   ~PlotView();
 
 public slots:
-  void setSignal(Signal* a_signal);
+  void setSignal(QString name, Signal* a_signal);
   void redrawScene();
+  void removeSignal(QString name);
 
 signals:
   void signalUpdated();
 
 private:
+  struct SignalWithInfo;
 
-  QGraphicsScene*         m_scene;
-  std::unique_ptr<Signal> m_signal;
+  void drawSignal(SignalWithInfo* si);
+
+  QGraphicsScene*        m_scene;
+  QList<SignalWithInfo*> m_signals;
+
+  const double mc_widthScale = 1.0 / 100.0;
+  const double mc_heightScale = 100;
+
+
 };
 
 #endif // PLOTVIEW_H

@@ -198,9 +198,13 @@ void PlotView::redrawGrid()
   QRectF sceneRect = m_scene->sceneRect();
 
   for (TDS t = 0; t < m_signalUs; t += 1000) {
-    new QGraphicsLineItem(horizPosAt(t), 0,
-                          horizPosAt(t), sceneRect.height(),
-                          m_grid);
+    QGraphicsLineItem* line =
+      new QGraphicsLineItem(horizPosAt(t), 0,
+                            horizPosAt(t), sceneRect.height(),
+                            m_grid);
+    QPen p = line->pen();
+    p.setColor(QColor(Qt::gray));
+    line->setPen(p);
   }
 }
 

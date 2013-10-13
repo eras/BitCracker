@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>586</width>
-    <height>423</height>
+    <width>1601</width>
+    <height>1152</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,15 +21,21 @@
     </sizepolicy>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="10,5">
       <item>
        <widget class="PlotView" name="plotView">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+        <property name="minimumSize">
+         <size>
+          <width>500</width>
+          <height>110</height>
+         </size>
         </property>
         <property name="verticalScrollBarPolicy">
          <enum>Qt::ScrollBarAsNeeded</enum>
@@ -48,12 +54,27 @@
        </widget>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout">
+       <layout class="QVBoxLayout" name="verticalLayout" stretch="1,7,1,7">
+        <property name="spacing">
+         <number>0</number>
+        </property>
         <property name="sizeConstraint">
-         <enum>QLayout::SetMinimumSize</enum>
+         <enum>QLayout::SetNoConstraint</enum>
         </property>
         <item>
          <widget class="QLabel" name="label_2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Ignored">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>30</height>
+           </size>
+          </property>
           <property name="text">
            <string>Cursor</string>
           </property>
@@ -64,10 +85,22 @@
         </item>
         <item>
          <widget class="QListWidget" name="cursorInfo">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="minimumSize">
            <size>
             <width>200</width>
             <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>200</width>
+            <height>500</height>
            </size>
           </property>
          </widget>
@@ -75,7 +108,7 @@
         <item>
          <widget class="QLabel" name="label">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+           <sizepolicy hsizetype="Preferred" vsizetype="Ignored">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -97,14 +130,20 @@
         <item>
          <widget class="QListWidget" name="listWidget">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="minimumSize">
+           <size>
+            <width>200</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="maximumSize">
            <size>
-            <width>300</width>
+            <width>200</width>
             <height>100</height>
            </size>
           </property>
@@ -133,8 +172,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>586</width>
-     <height>30</height>
+     <width>1601</width>
+     <height>27</height>
     </rect>
    </property>
    <property name="nativeMenuBar">

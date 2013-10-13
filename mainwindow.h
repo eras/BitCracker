@@ -19,6 +19,7 @@ public slots:
   void openLoadWaveform();
   void loadWaveform(QString a_filename);
   void openSequenceLengthAnalysis();
+  void capture();
 
 private:
   Ui::MainWindow *ui;

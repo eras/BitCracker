@@ -138,9 +138,9 @@ void PlotView::drawSignal(SignalWithInfo* si)
         ofs += 3;
       }
     } else {
-      addLine(prevTime, curTime, !state, !state, 1, QColor(Qt::black), 0);
+      addLine(prevTime, curTime, !state, !state, 2, QColor(Qt::black), 0);
     }
-    addLine(curTime, curTime, 0, 1, 1, QColor(Qt::black), 0);
+    addLine(curTime, curTime, 0, 1, 2, QColor(Qt::black), 0);
     prevTime = curTime;
     state = !state;
   }

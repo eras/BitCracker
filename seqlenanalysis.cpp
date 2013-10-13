@@ -142,16 +142,17 @@ SeqLenAnalysis::add(Data a_data)
   m_data.push_front(a_data);
   Data& data = *m_data.begin();
 
-  auto add = [&](int x, QString value) {
-    QTableWidgetItem* w = new QTableWidgetItem(value);
+  auto add = [&](int x, QVariant value) {
+    QTableWidgetItem* w = new QTableWidgetItem;
+    w->setData(Qt::DisplayRole, value);
     ui->seqLenTable->setItem(0, x, w);
     m_widgetData[w] = &data;
   };
 
-  add(0, QString::number(data.bit));
-  add(1, QString::number(data.n));
-  add(2, QString::number(data.mean));
-  add(3, QString::number(data.stddev));
-  add(4, QString::number(data.min));
-  add(5, QString::number(data.max));
+  add(0, data.bit);
+  add(1, data.n);
+  add(2, data.mean);
+  add(3, data.stddev);
+  add(4, data.min);
+  add(5, data.max);
 }

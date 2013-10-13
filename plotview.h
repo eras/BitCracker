@@ -36,12 +36,14 @@ signals:
 
 protected:
   void wheelEvent(QWheelEvent* event) override;
+  void mousePressEvent(QMouseEvent* event) override;
 
 private:
   struct SignalWithInfo;
 
   void drawSignal(SignalWithInfo* si);
   void redrawGrid();
+  void redrawPointOfInterest();
 
   QGraphicsScene*        m_scene;
   QList<SignalWithInfo*> m_signals;
@@ -58,12 +60,17 @@ private:
   unsigned horizPosAt(TDS time);
   unsigned vertBegin(unsigned index); // y-offset of the beginning of the nth plot
   unsigned vertEnd(unsigned index); // y-offset of the ending of the nth plot
+  bool getSignalPosition(QPointF a_at, int& a_signalIdx, TDS& a_signalTime);
+  void setPointOfInterest(TDS a_at);
 
   typedef QColor ConditionMarker;
 
   typedef std::map<ConditionCheckFactory*, ConditionMarker> ConditionMap;
 
   ConditionMap m_conditions;
+
+  unsigned            m_timeOfInterest;
+  QGraphicsItemGroup* m_interestIndicator;
 };
 
 #endif // PLOTVIEW_H

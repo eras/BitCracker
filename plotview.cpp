@@ -34,7 +34,8 @@ struct PlotView::SignalWithInfo {
 
 PlotView::PlotView(QWidget *parent) :
   QGraphicsView(parent), m_grid(new QGraphicsItemGroup), m_signalUs(0),
-  m_zoomNumerator(1), m_zoomDenominator(1)
+  m_zoomNumerator(1), m_zoomDenominator(1),
+  m_timeOfInterest(0), m_interestIndicator(0)
 {
   m_scene = new QGraphicsScene(this);
   setScene(m_scene);
@@ -58,6 +59,8 @@ PlotView::getSignalByIndex(int a_index)
     return 0;
   }
 }
+
+
 
 Signal*
 PlotView::getSignalByName(QString a_name)
@@ -150,6 +153,7 @@ void PlotView::redraw()
 {
   redrawScene();
   redrawGrid();
+  redrawPointOfInterest();
 }
 
 unsigned PlotView::horizPosAt(TDS time)
@@ -174,6 +178,65 @@ void PlotView::wheelEvent(QWheelEvent* event)
   } else if (event->delta() < 0) {
     zoomOut();
   }
+}
+
+void PlotView::mousePressEvent(QMouseEvent* a_event)
+{
+  QPointF at = mapToScene(a_event->x(), a_event->y());
+  int signalIdx;
+  TDS signalTime;
+
+  if (getSignalPosition(at, signalIdx, signalTime)) {
+    std::cerr << signalIdx << " , " << signalTime << std::endl;
+    setPointOfInterest(signalTime);
+  }
+}
+
+void PlotView::redrawPointOfInterest()
+{
+  delete m_interestIndicator;
+  m_interestIndicator = new QGraphicsItemGroup();
+  m_scene->addItem(m_interestIndicator);
+
+  int signalIdx = 0;
+  for (auto& si: m_signals) {
+    Signal& signal = *si->signal;
+    Signal::tds_iterator at = signal.findTime(m_timeOfInterest);
+    if (at != signal.tds_end()) { 
+      Signal::tds_iterator next = at;
+      ++next;
+      if (next != signal.tds_end()) {
+        QGraphicsLineItem* line =
+          new QGraphicsLineItem(horizPosAt(*at), si->position + si->height / 2,
+                                horizPosAt(*next), si->position + si->height / 2,
+                                m_interestIndicator);
+        QPen p = line->pen();
+        p.setWidth(6);
+        p.setColor(QColor(Qt::blue));
+        line->setPen(p);
+      }
+    }
+    ++signalIdx;
+  }
+}
+
+void PlotView::setPointOfInterest(TDS a_at)
+{
+  m_timeOfInterest = a_at;
+  redrawPointOfInterest();
+}
+
+bool PlotView::getSignalPosition(QPointF a_at, int& a_signalIdx, TDS& a_signalTime)
+{
+  for (int signalIdx = 0; signalIdx < m_signals.size(); ++signalIdx) {
+    if (a_at.y() >= vertBegin(signalIdx) &&
+        a_at.y() <= vertEnd(signalIdx)) {
+      a_signalIdx = signalIdx;
+      a_signalTime = a_at.x() * m_zoomDenominator / m_zoomNumerator / mc_widthScale;
+      return true;
+    }
+  }
+  return false;
 }
 
 void PlotView::zoomIn()

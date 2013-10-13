@@ -125,12 +125,16 @@
      <string>&amp;File</string>
     </property>
     <addaction name="action_Load"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionCapture"/>
+    <addaction name="separator"/>
     <addaction name="action_quit"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
      <string>&amp;View</string>
     </property>
+    <addaction name="actionZoom_all"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
@@ -140,9 +144,15 @@
    </widget>
    <widget class="QMenu" name="menuAnalyze">
     <property name="title">
-     <string>Analyze</string>
+     <string>&amp;Analyze</string>
     </property>
     <addaction name="actionSignal_durations"/>
+    <addaction name="actionDemodulate"/>
+    <addaction name="separator"/>
+    <addaction name="actionAutocorrelation"/>
+    <addaction name="actionCorrelate_with_sequence_number"/>
+    <addaction name="actionFind_checksum_bits"/>
+    <addaction name="actionFind_similarities"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menuView"/>
@@ -150,6 +160,9 @@
    <addaction name="menu_Help"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
@@ -175,7 +188,47 @@
   </action>
   <action name="actionSignal_durations">
    <property name="text">
-    <string>Signal durations</string>
+    <string>Signal &amp;durations</string>
+   </property>
+  </action>
+  <action name="actionDemodulate">
+   <property name="text">
+    <string>De&amp;modulate</string>
+   </property>
+  </action>
+  <action name="actionAutocorrelation">
+   <property name="text">
+    <string>&amp;Autocorrelation</string>
+   </property>
+  </action>
+  <action name="actionFind_checksum_bits">
+   <property name="text">
+    <string>Find &amp;checksum bits</string>
+   </property>
+  </action>
+  <action name="actionCapture">
+   <property name="text">
+    <string>&amp;Capture</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>&amp;Save</string>
+   </property>
+  </action>
+  <action name="actionZoom_all">
+   <property name="text">
+    <string>Zoom all</string>
+   </property>
+  </action>
+  <action name="actionFind_similarities">
+   <property name="text">
+    <string>Mark &amp;identical subsequences</string>
+   </property>
+  </action>
+  <action name="actionCorrelate_with_sequence_number">
+   <property name="text">
+    <string>Correlate with parameter</string>
    </property>
   </action>
  </widget>

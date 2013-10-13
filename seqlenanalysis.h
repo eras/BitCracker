@@ -9,6 +9,7 @@
 #include "signal.h"
 
 class QTableWidgetItem;
+class QRadioButton;
 
 namespace Ui {
 class SeqLenAnalysis;
@@ -31,6 +32,8 @@ private slots:
   void chooseItem(QTableWidgetItem* item);
   void markDone();
   void changeColor();
+  void redraw();
+  void chooseK();
 
 private:
   Ui::SeqLenAnalysis *ui;
@@ -44,11 +47,13 @@ private:
     double max;
   };
 
-  void add(Data data);
+  void add(int k, Data data);
 
   std::map<QTableWidgetItem*, Data*> m_widgetData;
-  std::list<Data>                    m_data;
+  std::map<int, std::list<Data>>     m_data;
   QColor                             m_color;
+  std::map<QRadioButton*, int>       m_chooseK;
+  int                                m_currentK;
 };
 
 #endif // SEQLENANALYSIS_H

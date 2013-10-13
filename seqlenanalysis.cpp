@@ -64,7 +64,7 @@ SeqLenAnalysis::redraw()
     ui->seqLenTable->removeRow(0);
   }
 
-  for (auto data: m_data[m_currentK]) {
+  for (auto& data: m_data[m_currentK]) {
     ui->seqLenTable->insertRow(0);
 
     auto add = [&](int x, QVariant value) {

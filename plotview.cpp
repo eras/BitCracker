@@ -228,6 +228,7 @@ void PlotView::redrawScene()
     // setScene(newScene);
     // delete oldScene;
 
+    setMinimumSize(300, height + 30);
     setSceneRect(0, 0, width, height);
   } else {
     // hmm..

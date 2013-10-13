@@ -24,6 +24,11 @@ MainWindow::MainWindow(QWidget *parent) :
   connect(ui->action_Load, SIGNAL(activated()), this, SLOT(openLoadWaveform()));
   connect(ui->actionSignal_durations, SIGNAL(activated()), this, SLOT(openSequenceLengthAnalysis()));
   connect(ui->actionCapture, SIGNAL(activated()), this, SLOT(capture()));
+
+  ui->cursorInfo->addItem("Signal 1");
+  ui->cursorInfo->addItem("  Width");
+  ui->cursorInfo->addItem("  Frequency");
+  ui->cursorInfo->addItem("  Cycle length");
 }
 
 void MainWindow::openSequenceLengthAnalysis()
